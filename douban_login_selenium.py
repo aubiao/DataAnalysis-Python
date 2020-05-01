@@ -8,8 +8,9 @@ class Douban():
         self.url = "https://www.douban.com/"
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         dcap["phantomjs.page.setting.userAgent"] = (
-            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0")
-        self.driver = webdriver.PhantomJS(executable_path='/usr/local/bin/phantomjs', desired_capabilities=dcap)
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
+        self.driver = webdriver.PhantomJS(
+            executable_path="D:\GoogleDownload\phantomjs-2.1.1-windows\\bin\phantomjs.exe", desired_capabilities=dcap)
 
     def log_in(self):
         self.driver.get(self.url)

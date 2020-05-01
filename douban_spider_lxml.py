@@ -1,5 +1,7 @@
+# 豆瓣已开启反爬，问题待解决（目前只能通过模拟网页登录）
 import requests
 import chardet
+import re
 import pandas as pd
 import time
 import pickle
@@ -38,22 +40,31 @@ def get_proxies():
 
 
 def get_cookie_from_net(login_url):
-    payload = {'ck': '',
-               'name': username,
-               'password': password,
-               'remember': 'false',
-               'ticket': ''}
+    payload = {
+        "ck": "",
+        "name": username,
+        "password": password,
+        "remember": "true",
+        "ticket": ""
+    }
 
-    data = s.post(login_url, headers=headers, data=payload, verify=True)
+    data = s.post(login_url, headers=headers, data=payload).json()
+    if data['status'] == "success":
+        print("登录成功！")
+    else:
+        print("登录失败！", data)
+
     html = s.get('https://www.douban.com/people/144783640/')
-    print(str(html))
+
+    if html.status_code == 200:
+        print("提交表单登录，成功获取cookies...")
+    else:
+        print("登录失败，status_code = ", html.status_code)
     # with open('login.txt', 'w') as f:
     #     f.write(str(html))
     # with open('cookies' + username + '.douban', 'wb') as f:
     #     cookie_dict = requests.utils.dict_from_cookiejar(s.cookies)
     #     pickle.dump(cookie_dict, f)
-
-    print("提交表单登录，成功获取cookies...")
 
     return s.cookies
 
@@ -191,7 +202,8 @@ def login_and_get_data():
     # if s.cookies is None:
     except:
         print("从文件获取cookies失败...\n正在尝试提交表单登录以获取...")
-        s.cookies = get_cookie_from_net('https://accounts.douban.com/passport/login')
+        s.cookies = get_cookie_from_net(
+            "https://accounts.douban.com/j/mobile/login/basic")
 
 
 # html = s.get('https://www.douban.com/people/144783640/', headers=headers)
@@ -207,8 +219,8 @@ if __name__ == '__main__':
     ua = UserAgent()
     headers = {'User-Agent': ua.random}
 
-    username = '15989546438'
-    password = 'a15914710451'
+    username = "15989546438"
+    password = "a15914710451"
 
     # run()
     login_and_get_data()
