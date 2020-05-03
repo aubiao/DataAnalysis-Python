@@ -2,6 +2,7 @@ import os
 import requests
 import pandas as pd
 import xlsxwriter
+import openpyxl
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
@@ -72,13 +73,24 @@ def csvToExcel3(books_data):
 
     data = {'代号': ['A', 'B', 'C', 'D'], '身高': [
         178, 177, 180, 175], '体重': [65, 70, 64, 67]}
-    df = pd.DataFrame(data)
+    df2 = pd.DataFrame(data)
 
     wb = Workbook()
-    ws = wb.create_sheet("豆瓣图书", 0)
+    ws1 = wb.create_sheet("豆瓣图书", 0)
+    ws2 = wb.create_sheet("体测数据", 1)
 
-    for r in dataframe_to_rows(df, index=True, header=True):
-        ws.append(r)
+    nums = len(books_data)
+    titles = books_data['titles']
+
+    for i in range(1, nums):
+        img = openpyxl.drawing.image.Image(titles[i]+'.jpg')
+        ws1.add_image(img, 'B'+str(i + 2))
+
+    for r in dataframe_to_rows(df1, index=True, header=True):
+        ws1.append(r)
+
+    for r in dataframe_to_rows(df2, index=True, header=True):
+        ws2.append(r)
 
     wb.save("pandas_openpyxl.xlsx")
 
@@ -91,13 +103,13 @@ if __name__ == '__main__':
         os.mkdir('ExcelData')
     os.chdir('ExcelData')
 
-    books_data = pd.read_csv(
-        'd:\Python\DataAnalysis-Python\doubanbook.csv', usecols=['img_urls', 'titles'])
-    img_urls = books_data['img_urls']
-    titles = books_data['titles']
+    # books_data = pd.read_csv(
+    #     '..\doubanbook.csv', usecols=['img_urls', 'titles'])
+    # img_urls = books_data['img_urls']
+    # titles = books_data['titles']
     # savepics(img_urls, titles)
 
-    books_data = pd.read_csv('d:\Python\DataAnalysis-Python\doubanbook.csv', usecols=[
+    books_data = pd.read_csv('..\doubanbook.csv', usecols=[
         'titles', 'authors', 'ratings', 'details'
     ], na_values='NULL')
 
